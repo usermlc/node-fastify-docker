@@ -1,0 +1,18 @@
+{
+  "name": "node-fastify-docker-integration",
+  "version": "1.0.0",
+  "description": "A project demonstrating Fastify with Docker integration",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Sangarius",
+  "license": "ISC",
+  "keywords": [],
+  "dependencies": {
+    "fastify": "^4.28.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.5.5"
+  }
+}

@@ -3,21 +3,27 @@
  */
 class User {
   /**
-   * Initializes a new User instance with the specified fields.
-   * @param {EntityFields.User} fields - The fields required for creating a user.
+   * @param {EntityFields.User} params
    */
-  constructor(fields) {
-    const { id, cartRef } = fields;
+  constructor({
+    id,
+    cartRef,
+    username,
+    passwordHash,
+    isPrivileged,
+    createdAt,
+    updatedAt,
+  }) {
     this.id = id;
-    this.cartRef = cartRef ?? null;
-  }
+    this.username = username;
+    this.isPrivileged = isPrivileged || false;
 
-  /**
-   * Checks if the user has an active cart.
-   * @returns {boolean} True if a cart reference exists; otherwise, false.
-   */
-  hasCart() {
-    return this.cartRef !== null;
+    this.passwordHash = passwordHash || null;
+
+    this.cartRef = cartRef || null;
+
+    this.createdAt = createdAt || new Date();
+    this.updatedAt = updatedAt || null;
   }
 }
 

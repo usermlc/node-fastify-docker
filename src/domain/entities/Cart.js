@@ -5,61 +5,62 @@ const { CartItem } = require('./CartItem');
  */
 class Cart {
   /**
-   * Initializes a new Cart instance with the given fields.
-   * @param {EntityFields.Cart} fields - The essential fields to create a cart.
+   * @param {EntityFields.Cart} params
    */
-  constructor(fields) {
-    const { id, userId, items = [] } = fields;
+  constructor({ id, userId, items = [] }) {
     this.id = id;
-    this.userId = userId;
     this.items = items;
-  }
-  removeItem(productId, quantity) {
-    throw new Error('Method not implemented.');
-  }
-  clear() {
-    throw new Error('Method not implemented.');
+    this.userId = userId;
   }
 
   /**
-   * Adds a product to the cart or updates the quantity if it already exists.
-   * @param {Entities.Product} product - The product to add.
-   * @param {number} quantity - The quantity to add (defaults to 1).
+   * Adds a product to the cart or increases its quantity.
+   * @param {Entities.Product} product
+   * @param {number} quantity
    */
   addItem(product, quantity = 1) {
-    const item = this.items.find((cartItem) => cartItem.product.id === product.id);
+    const existingItem = this.items.find(
+      (item) => item.product.id === product.id
+    );
 
-    if (item) {
-      item.quantity += quantity;
+    if (existingItem) {
+      existingItem.quantity += quantity;
     } else {
-      this.items.push(new CartItem({ product, quantity }));
+      this.items.push(
+        new CartItem({
+          product,
+          quantity,
+        })
+      );
     }
   }
 
   /**
-   * Reduces the quantity of a product in the cart, or removes it if the quantity falls to zero.
-   * @param {string} productId - ID of the product to remove or decrease.
-   * @param {number} quantity - Quantity to decrease (defaults to 1).
+   * Decreases the quantity of a product or removes it if quantity reaches zero.
+   * @param {string} productId
+   * @param {number} quantity
    */
-  decreaseItemQuantity(productId, quantity = 1) {
-    const index = this.items.findIndex((cartItem) => cartItem.product.id === productId);
+  removeItem(productId, quantity = 1) {
+    const itemIndex = this.items.findIndex(
+      (item) => item.product.id === productId
+    );
 
-    if (index === -1) {
-      throw new Error('Item not found in cart');
+    if (itemIndex === -1) {
+      throw new Error('Product not found in cart');
     }
 
-    const item = this.items[index];
+    const item = this.items[itemIndex];
     item.quantity -= quantity;
 
     if (item.quantity <= 0) {
-      this.items.splice(index, 1); // Remove item if quantity is zero or less
+      this.items.splice(itemIndex, 1); // Remove item from cart
     }
   }
 
   /**
-   * Empties the cart, removing all items.
+   * Clears all items from the cart.
    */
-  emptyCart() {
+  clear() {
     this.items = [];
   }
 }

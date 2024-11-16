@@ -1,39 +1,46 @@
-const { CreateUserAction } = require('../../../app/actions/user/CreateUser');
+const { GetUserAction } = require('../../../app/actions/user/GetUser');
 
 /**
- * @type {import('fastify').RouteOptions}
+ *
+ * @param {import('fastify').FastifyInstance} fastify
+ * @returns {import('fastify').RouteOptions}
  */
-module.exports.createUser = {
-  url: '/users',
-  method: 'POST',
+module.exports.getUser = (fastify) => ({
+  url: '/users/~',
+  method: 'GET',
+  preValidation: fastify.auth([
+    fastify.authPipeFactory(),
+    fastify.authGuardFactory(),
+  ]),
   handler: async (request, reply) => {
-    const createUser = new CreateUserAction(request.server.domainContext);
+    const { userId } = fastify.requestContext.get('sessionData');
 
-    const user = await createUser.execute();
+    const getUser = new GetUserAction(request.server.domainContext);
 
-    return reply.code(201).send(user);
+    const user = await getUser.execute(userId);
+
+    return reply.code(200).send(user);
   },
   schema: {
     tags: ['Users'],
     headers: {
       type: 'object',
       properties: {
-        'x-user-id': {
+        'x-auth-token': {
           type: 'string',
-          description: 'Target user ID',
+          description: 'Session access token',
         },
       },
-      required: ['x-user-id'],
+      required: ['x-auth-token'],
     },
     response: {
-      201: {
+      200: {
         type: 'object',
         properties: {
           id: { type: 'string', format: 'uuid' }, // UUID for the ID
           cartRef: { type: ['string', 'null'], nullable: true }, // cartRef can be either a string or null
         },
-        required: ['id', 'cartRef'],
       },
     },
   },
-};
+});

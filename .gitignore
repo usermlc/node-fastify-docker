@@ -3,3 +3,4 @@ npm-debug.log
 .env
 .htpasswd
 package-lock.json
+**/certs/*

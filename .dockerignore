@@ -33,3 +33,14 @@ package-lock.json
 .vscode
 .husky
 
+# Ignore all files that contain cache/lock data to prevent cache/lock files from being copied to the image
+yarn.lock
+pnpm-lock.yaml
+package-lock.json
+
+# Ignore dev tools
+.vscode
+.husky
+
+# Ignore test files
+tests/

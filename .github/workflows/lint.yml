@@ -1,0 +1,33 @@
+name: Lint Codebase
+
+# Тригери для запуску:
+on:
+  push: # Запуск при кожному пуші в основну гілку
+    branches:
+      - main
+  pull_request: # Запуск при створенні pull request до основної гілки
+    branches:
+      - main
+
+jobs:
+  lint: # Назва завдання
+    runs-on: ubuntu-latest # Використовуємо останню версію Ubuntu для виконання завдання
+
+    steps:
+      # Крок 1: Завантаження коду репозиторію
+      - name: Check out the repository
+        uses: actions/checkout@v4 # Використовуємо офіційну дію для завантаження коду
+
+      # Крок 2: Встановлення Node.js потрібної версії
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22' # Вказуємо версію Node.js (замість 22 виберіть актуальну версію, якщо потрібно)
+
+      # Крок 3: Встановлення залежностей
+      - name: Install dependencies
+        run: npm install # Встановлюємо залежності з package.json
+
+      # Крок 4: Запуск ESLint
+      - name: Run ESLint
+        run: npm run lint # Запуск команди для лінтингу (команда повинна бути вказана в package.json)

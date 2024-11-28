@@ -3,33 +3,27 @@ const { randomUUID } = require('node:crypto');
 const { describe, it } = require('node:test');
 const bcrypt = require('bcrypt');
 
-// Імпорт сервісу авторизації
 const { AuthService } = require('../../src/domain/services/auth.service');
 
-// Мок-репозиторій для імітації роботи з користувачами
+// Mock dependencies for AuthService
 const mockUserRepository = {
-  // Метод для отримання користувача за його іменем
   getByUsername: async (username) => {
     if (username === 'testuser') {
       return {
-        id: randomUUID(), // Генерація унікального ID
-        username, // Ім'я користувача
-        passwordHash: await bcrypt.hash('password', 10), // Імітація збереженого хешу пароля
+        id: randomUUID(),
+        username,
+        passwordHash: await bcrypt.hash('password', 10),
       };
     }
-    return null; // Повертаємо null, якщо користувача не знайдено
+    return null;
   },
-  // Метод для збереження нового/оновленого користувача
-  save: async (user) => user, // Просто повертаємо передані дані
+  save: async (user) => user,
 };
-
-// Мок-сервіс для роботи з JWT
 const mockJwtService = {
-  generateAccessToken: () => 'accessToken', // Імітація генерації access токена
-  generateRefreshToken: () => 'refreshToken', // Імітація генерації refresh токена
+  generateAccessToken: () => 'accessToken',
+  generateRefreshToken: () => 'refreshToken',
 };
 
-// Створюємо екземпляр AuthService (цю частину не чіпаємо)
 const authService = new AuthService({
   // @ts-ignore - no need for full implementation
   userRepository: mockUserRepository,
@@ -37,42 +31,37 @@ const authService = new AuthService({
   jwtService: mockJwtService,
 });
 
-// Тести для сервісу авторизації
 describe('AuthService', () => {
-  it('🔒 Повинен генерувати хеш, який не збігається з паролем', async () => {
-    const password = 'myPassword123'; // Оригінальний пароль
-    const hash = await authService.generatePasswordHash(password); // Генерація хешу
+  it('🔒 should generate a hashed password that does not match the original', async () => {
+    const password = 'myPassword123';
+    const hash = await authService.generatePasswordHash(password);
 
-    // Перевіряємо, що хеш і пароль не співпадають
     assert.notEqual(
       hash,
       password,
-      'Згенерований хеш не повинен збігатися з паролем'
+      'Password hash should not match original password'
     );
   });
 
-  it('✅ Повинен повертати користувача, якщо облікові дані правильні', async () => {
+  it('✅ should return user if credentials are correct', async () => {
     const username = 'testuser';
     const password = 'password';
+    const user = await authService.authenticateUser(username, password);
 
-    const user = await authService.authenticateUser(username, password); // Виконуємо аутентифікацію
-
-    // Перевіряємо, чи ім'я користувача відповідає очікуваному
     assert.strictEqual(
       user.username,
       username,
-      'Ім\'я користувача повинно відповідати переданому значенню'
+      'Authenticated username should match'
     );
   });
 
-  it('🔑 Повинен повертати access і refresh токени при логіні', async () => {
+  it('🔑 should return access and refresh tokens upon login', async () => {
     const { accessToken, refreshToken } = await authService.login(
       'testuser',
       'password'
-    ); // Логін
+    );
 
-    // Перевіряємо наявність токенів
-    assert.ok(accessToken, 'Токен доступу повинен бути створений');
-    assert.ok(refreshToken, 'Токен оновлення повинен бути створений');
+    assert.ok(accessToken, 'Access token should be defined');
+    assert.ok(refreshToken, 'Refresh token should be defined');
   });
 });

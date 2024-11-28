@@ -1,21 +1,23 @@
 declare namespace EntityFields {
+  // Define the structure of the Product fields
   export type Product = {
-    id?: string;
-    name: string;
-    description: string;
-    price: number;
-    releaseDate: Date;
+    id?: string; // Optional product ID
+    name: string; // Product name
+    description: string; // Product description
+    price: number; // Product price
+    releaseDate: Date; // Product release date
   };
 }
 
 declare namespace Entities {
   export class Product {
-    public id?: string;
-    public name: string;
-    public price: number;
-    public releaseDate: Date;
-    public description: string;
+    public id?: string; // Optional product ID
+    public name: string; // Product name
+    public description: string; // Product description
+    public price: number; // Product price
+    public releaseDate: Date; // Product release date
 
+    // Constructor to initialize a Product object
     constructor(fields: EntityFields.Product) {
       this.id = fields.id;
       this.name = fields.name;
@@ -24,4 +26,11 @@ declare namespace Entities {
       this.releaseDate = fields.releaseDate;
     }
   }
+
+  // Define the structure of the ProductsList type
+  export type ProductsList = {
+    items: Product[]; // Array of Product objects
+    total: number; // Total number of products
+    page: number; // Current page number
+  };
 }
